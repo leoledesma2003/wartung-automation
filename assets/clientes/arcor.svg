@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 90" width="200" height="90">
+  <ellipse cx="100" cy="45" rx="92" ry="40" fill="#1565C0"/>
+  <path d="M20 60 Q100 10 180 60" stroke="#4FC3F7" stroke-width="4" fill="none"/>
+  <text x="100" y="55" font-family="Arial Black,sans-serif" font-size="30" font-weight="900" fill="white" text-anchor="middle" letter-spacing="3">ARCOR</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 90" width="280" height="90">
+  <circle cx="22" cy="30" r="5" fill="#C62828"/>
+  <circle cx="38" cy="22" r="5" fill="#C62828"/>
+  <circle cx="54" cy="18" r="5" fill="#C62828"/>
+  <circle cx="70" cy="22" r="5" fill="#C62828"/>
+  <circle cx="86" cy="30" r="5" fill="#C62828"/>
+  <text x="140" y="62" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#C62828" text-anchor="middle" letter-spacing="2">ROYAL CANIN</text>
+  <text x="280" y="62" font-family="Arial,sans-serif" font-size="14" fill="#C62828">®</text>
+</svg>

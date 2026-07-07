@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wartung Automation — Automatización y Control Industrial</title>
+<meta name="description" content="Soluciones en automatización y control industrial desde 2000. PLCs, variadores, servos, sensores, seguridad. Merlo, Buenos Aires.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080F;--bg2:#0B0D18;--bg3:#111827;
+  --surf:rgba(255,255,255,.04);--brd:rgba(255,255,255,.08);
+  --blue:#2563EB;--cyan:#0EA5E9;--amber:#F59E0B;
+  --text:#F1F5F9;--dim:#64748B;--maxw:1240px;
+  --c-plc:#8B5CF6;--c-det:#0EA5E9;--c-pot:#10B981;--c-inst:#F59E0B;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--cyan);color:#07080F;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+h1,h2,h3{font-family:'Syne',sans-serif;}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+.rv.on{opacity:1;transform:none;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(7,8,15,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd);}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{height:38px;width:auto;object-fit:contain;mix-blend-mode:screen;}
+.nav-logo-txt{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;letter-spacing:.08em;}
+.nav-logo-txt span{color:var(--cyan);}
+.nl{display:flex;align-items:center;gap:26px;}
+.nl a{font-size:.85rem;font-weight:500;color:var(--dim);transition:color .2s;}
+.nl a:hover{color:var(--text);}
+.ncta{display:none;background:var(--cyan);color:#fff;font-size:.85rem;font-weight:600;padding:9px 20px;border-radius:6px;transition:opacity .2s;}
+.ncta:hover{opacity:.85;}
+.burg{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.burg span{width:22px;height:2px;background:var(--text);}
+@media(min-width:861px){.ncta{display:inline-block;}}
+@media(max-width:860px){
+  .nl{position:fixed;top:0;right:-100%;width:70%;max-width:290px;height:100vh;background:#0B0D18;
+    flex-direction:column;justify-content:center;border-left:1px solid var(--brd);transition:right .3s;}
+  .nl.open{right:0;}
+  .burg{display:flex;}
+}
+
+/* HERO */
+#hero{position:relative;height:100vh;min-height:700px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.hero-ov{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(7,8,15,.7) 0%,rgba(7,8,15,.97) 70%);}
+.hero-c{position:relative;z-index:2;width:100%;max-width:860px;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px;}
+/* Hero brand block */
+.hero-brand{position:relative;margin-bottom:44px;}
+.hero-brand-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:1000px;height:1000px;background:radial-gradient(circle,rgba(14,165,233,.28) 0%,rgba(37,99,235,.14) 35%,transparent 65%);pointer-events:none;animation:hgpulse 3.5s ease-in-out infinite;}
+@keyframes hgpulse{0%,100%{opacity:.65;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.14);}}
+.hero-logo-main{height:clamp(260px,38vw,460px);width:auto;object-fit:contain;mix-blend-mode:screen;position:relative;z-index:2;filter:drop-shadow(0 0 70px rgba(14,165,233,.75)) drop-shadow(0 0 25px rgba(14,165,233,.55)) drop-shadow(0 0 100px rgba(37,99,235,.35));}
+/* Decorative line under logo — centered fade */
+.hero-brand-line{width:60%;height:1px;background:linear-gradient(to right,transparent,rgba(14,165,233,.6),transparent);margin:16px auto 0;}
+/* Tagline — colores del logo */
+.htag{display:inline-flex;align-items:center;gap:10px;font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);margin-bottom:20px;}
+.htag::before,.htag::after{content:'';width:28px;height:1px;background:linear-gradient(to right,transparent,rgba(14,165,233,.7));}
+.htag::after{transform:scaleX(-1);}
+#hero h1{font-size:clamp(2rem,4.5vw,3.6rem);font-weight:800;line-height:1.08;letter-spacing:-.02em;margin-bottom:18px;}
+#hero h1 em{font-style:normal;color:var(--cyan);}
+#hero .hsub{font-size:1rem;color:var(--dim);line-height:1.65;max-width:560px;margin-bottom:36px;}
+.hbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-a{background:var(--cyan);color:#fff;font-weight:600;font-size:.9rem;padding:12px 28px;border-radius:6px;transition:opacity .2s,transform .2s;}
+.btn-a:hover{opacity:.88;transform:translateY(-2px);}
+.btn-b{border:1px solid rgba(14,165,233,.35);color:var(--text);font-size:.9rem;font-weight:500;padding:12px 28px;border-radius:6px;transition:border-color .2s,color .2s,background .2s;}
+.btn-b:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(14,165,233,.06);}
+
+/* MARQUEE */
+.mwrap{background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);padding:14px 0;overflow:hidden;}
+.mtrack{display:flex;animation:slide 30s linear infinite;width:max-content;}
+.mtrack:hover{animation-play-state:paused;}
+.mi{white-space:nowrap;padding:0 36px;font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.mi span{color:var(--cyan);margin-right:6px;}
+@keyframes slide{to{transform:translateX(-50%);}}
+
+/* STATS */
+#stats{padding:70px 0;}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border:1px solid var(--brd);border-radius:10px;overflow:hidden;}
+.sbox{background:var(--bg2);padding:36px 28px;text-align:center;}
+.sbox:not(:last-child){border-right:1px solid var(--brd);}
+.snum{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;color:var(--cyan);line-height:1;}
+.slbl{font-size:.78rem;color:var(--dim);margin-top:8px;line-height:1.4;}
+@media(max-width:700px){.sgrid{grid-template-columns:repeat(2,1fr);}.sbox{border-right:none !important;border-bottom:1px solid var(--brd);}}
+
+/* ABOUT */
+#nosotros{padding:90px 0;background:var(--bg2);}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;}
+.aimg{position:relative;border-radius:10px;overflow:hidden;}
+.aimg img{width:100%;height:500px;object-fit:cover;}
+.abadge{position:absolute;bottom:20px;left:20px;background:rgba(7,8,15,.88);backdrop-filter:blur(8px);border:1px solid var(--brd);border-radius:8px;padding:14px 18px;}
+.abadge strong{display:block;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--cyan);}
+.abadge span{font-size:.75rem;color:var(--dim);}
+.atag{font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:block;}
+.atxt h2{font-size:clamp(1.9rem,3vw,2.6rem);font-weight:800;line-height:1.1;margin-bottom:18px;}
+.atxt p{color:var(--dim);line-height:1.7;margin-bottom:14px;font-size:.95rem;}
+.apills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+.ap{padding:7px 14px;border:1px solid var(--brd);border-radius:4px;font-size:.78rem;color:var(--dim);}
+.ap strong{color:var(--text);}
+@media(max-width:860px){.agrid{grid-template-columns:1fr;gap:36px;}}
+/* NOSOTROS BAND */
+#nosotros-band{position:relative;height:380px;overflow:hidden;margin-top:0;}
+#nosotros-band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;transform:scale(1.08);transition:transform 8s ease;}
+#nosotros-band:hover img{transform:scale(1.0);}
+#nosotros-band::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(7,8,15,.92) 30%,rgba(37,99,235,.35) 70%,rgba(14,165,233,.2) 100%);z-index:1;}
+#nosotros-band::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,var(--bg2));z-index:2;}
+.nband-c{position:absolute;inset:0;z-index:3;display:flex;align-items:center;padding:0 48px;}
+.nband-stat{display:flex;align-items:baseline;gap:12px;}
+.nband-num{font-family:'Syne',sans-serif;font-size:clamp(4rem,10vw,7rem);font-weight:800;color:var(--cyan);line-height:1;}
+.nband-txt{max-width:380px;}
+.nband-txt h3{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;line-height:1.15;color:#fff;margin-bottom:10px;}
+.nband-txt p{font-size:.9rem;color:rgba(255,255,255,.55);line-height:1.6;}
+.nband-line{width:3px;height:80px;background:var(--cyan);border-radius:2px;flex-shrink:0;margin:0 24px;}
+
+/* SERVICIOS */
+#servicios{padding:90px 0;}
+.sh{margin-bottom:44px;}
+.slabel{font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px;display:block;}
+.sh h2{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;line-height:1.1;}
+.svgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--brd);border:1px solid var(--brd);border-radius:10px;overflow:hidden;}
+.sc{background:var(--bg2);padding:32px;transition:background .2s;}
+.sc:hover{background:var(--bg3);}
+.scn{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:800;letter-spacing:.1em;color:var(--cyan);margin-bottom:14px;}
+.sc h3{font-size:1rem;font-weight:700;margin-bottom:8px;}
+.sc p{font-size:.85rem;color:var(--dim);line-height:1.6;}
+@media(max-width:860px){.svgrid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:540px){.svgrid{grid-template-columns:1fr;}}
+
+/* ROBOT BANNER */
+#robot-banner{position:relative;height:440px;overflow:hidden;}
+#robot-banner img{width:100%;height:100%;object-fit:cover;object-position:center 40%;}
+#robot-banner .rbo{position:absolute;inset:0;background:linear-gradient(to right,rgba(7,8,15,.88) 40%,rgba(7,8,15,.3) 100%);}
+#robot-banner .rbc{position:absolute;inset:0;display:flex;align-items:center;}
+#robot-banner h2{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.1;max-width:560px;}
+#robot-banner h2 em{font-style:normal;color:var(--cyan);}
+#robot-banner p{color:var(--dim);margin-top:14px;max-width:460px;line-height:1.6;}
+
+/* ESPECIALIDADES */
+#especialidades{padding:90px 0;}
+.esp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:48px;}
+.esp-card{display:flex;flex-direction:column;background:var(--bg2);border:2px solid var(--brd);border-radius:16px;padding:36px 28px;text-decoration:none;color:var(--text);transition:border-color .28s,transform .28s,box-shadow .28s;position:relative;overflow:hidden;cursor:pointer;}
+.esp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .28s;border-radius:16px 16px 0 0;}
+.esp-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .28s;pointer-events:none;}
+.esp-card:hover{transform:translateY(-8px);}
+.esp-card:hover::before,.esp-card:hover::after{opacity:1;}
+.esp-ico-wrap{width:68px;height:68px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;flex-shrink:0;}
+.esp-card h3{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.15;margin-bottom:12px;}
+.esp-card p{font-size:.84rem;color:var(--dim);line-height:1.7;flex:1;}
+.esp-cta{display:inline-flex;align-items:center;gap:7px;margin-top:24px;font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:gap .22s;}
+.esp-card:hover .esp-cta{gap:13px;}
+@media(max-width:900px){.esp-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.esp-grid{grid-template-columns:1fr;}}
+
+/* ===== CATÁLOGO CTA ===== */
+#productos{padding:90px 0;background:var(--bg2);}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px;}
+.cat-card{background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:24px;transition:transform .22s,border-color .22s;cursor:default;}
+.cat-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2);}
+.cat-dot{width:10px;height:10px;border-radius:50%;margin-bottom:14px;}
+.cat-card h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;margin-bottom:6px;}
+.cat-card p{font-size:.78rem;color:var(--dim);line-height:1.5;}
+.cat-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-top:12px;}
+.cat-cta{text-align:center;padding:40px;background:var(--bg);border:1px solid var(--brd);border-radius:12px;}
+.cat-cta p{color:var(--dim);margin-bottom:20px;font-size:.9rem;}
+.btn-catalog{display:inline-flex;align-items:center;gap:10px;background:var(--cyan);color:#fff;font-weight:700;font-size:1rem;padding:14px 32px;border-radius:8px;transition:opacity .2s,transform .2s;}
+.btn-catalog:hover{opacity:.88;transform:translateY(-2px);}
+@media(max-width:860px){.cat-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.cat-grid{grid-template-columns:1fr;}}
+
+/* CLIENTES */
+#clientes{padding:90px 0;}
+.clients-hd{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:56px;}
+.cq{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;line-height:1.2;}
+.cq em{font-style:normal;color:var(--cyan);}
+.cb{color:var(--dim);line-height:1.7;font-size:.95rem;}
+.logo-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;border:1px solid var(--brd);border-radius:10px;overflow:hidden;}
+.lgc{background:var(--bg2);padding:20px 14px;display:flex;align-items:center;justify-content:center;min-height:80px;transition:background .2s;}
+.lgc:hover{background:var(--bg3);}
+.lgc img{max-height:42px;max-width:100%;object-fit:contain;filter:grayscale(1) brightness(1.4);transition:filter .2s;}
+.lgc:hover img{filter:grayscale(0) brightness(1);}
+@media(max-width:1100px){.logo-grid{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:860px){.clients-hd{grid-template-columns:1fr;gap:24px;}.logo-grid{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:480px){.logo-grid{grid-template-columns:repeat(3,1fr);}}
+
+/* PROCESO */
+#proceso{padding:90px 0;background:var(--bg2);}
+.psteps{margin-top:44px;}
+.pstep{display:grid;grid-template-columns:60px 1fr;gap:22px;padding:26px 0;border-top:1px solid var(--brd);}
+.pstep:last-child{border-bottom:1px solid var(--brd);}
+.pn{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--brd);padding-top:2px;}
+.pb h3{font-size:1rem;font-weight:600;margin-bottom:6px;}
+.pb p{font-size:.85rem;color:var(--dim);line-height:1.6;max-width:560px;}
+
+/* CONTACTO */
+#contacto{padding:90px 0;}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
+.cl h2{font-size:clamp(1.9rem,3vw,2.6rem);font-weight:800;line-height:1.1;margin-bottom:14px;}
+.cl .csub{color:var(--dim);line-height:1.65;margin-bottom:28px;font-size:.95rem;}
+.cwa{display:inline-flex;align-items:center;gap:10px;background:#25D366;color:#fff;font-weight:600;font-size:.9rem;padding:13px 24px;border-radius:6px;transition:opacity .2s,transform .2s;}
+.cwa:hover{opacity:.9;transform:translateY(-2px);}
+.emstack{display:flex;flex-direction:column;gap:8px;margin-top:20px;}
+.emrow{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:14px 18px;transition:border-color .2s;}
+.emrow:hover{border-color:var(--dim);}
+.emdept{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin-bottom:3px;}
+.emval{font-size:.82rem;color:var(--dim);}
+.ccards{display:flex;flex-direction:column;gap:10px;}
+.ccard{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:18px 20px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s;}
+.ccard:hover{border-color:var(--dim);}
+.ccico{width:34px;height:34px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(14,165,233,.12);}
+.cclbl{font-size:.65rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:2px;}
+.ccval{font-size:.88rem;color:var(--text);}
+@media(max-width:860px){.cgrid{grid-template-columns:1fr;}}
+
+footer{padding:28px 0;border-top:1px solid var(--brd);}
+.fi{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.fc{font-size:.8rem;color:var(--dim);}
+.fl{display:flex;gap:18px;}
+.fl a{font-size:.8rem;color:var(--dim);transition:color .2s;}
+.fl a:hover{color:var(--text);}
+
+.wa-float{position:fixed;bottom:22px;right:22px;z-index:200;width:52px;height:52px;border-radius:50%;
+  background:#25D366;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px -4px rgba(37,211,102,.5);transition:transform .2s;}
+.wa-float:hover{transform:scale(1.1);}
+
+/* =============================================
+   MOBILE-FIRST — tablet ≤768px / phone ≤480px
+   ============================================= */
+@media(max-width:768px){
+  .wrap{padding:0 18px;}
+  /* section spacing */
+  #stats{padding:52px 0;}
+  #nosotros,#servicios,#especialidades,#productos,#clientes,#proceso,#contacto{padding:60px 0;}
+  /* hero */
+  #hero{min-height:560px;}
+  .hero-logo-main{height:clamp(130px,46vw,220px);}
+  .hero-brand{margin-bottom:20px;}
+  .hero-brand-glow{width:380px;height:380px;}
+  #hero h1{font-size:clamp(1.75rem,6vw,2.5rem);}
+  #hero .hsub{font-size:.88rem;max-width:100%;}
+  .hbtns{flex-direction:column;align-items:stretch;gap:10px;}
+  .hbtns .btn-a,.hbtns .btn-b{text-align:center;display:block;padding:15px 20px;font-size:.9rem;}
+  /* stats */
+  .sbox{padding:24px 12px;}
+  .snum{font-size:2.1rem;}
+  .slbl{font-size:.71rem;}
+  /* nosotros */
+  .aimg img{height:300px;}
+  .agrid{gap:28px;}
+  /* nosotros band */
+  .nband-c{padding:0 18px;}
+  .nband-line{margin:0 14px;height:56px;}
+  .nband-txt p{font-size:.82rem;}
+  /* servicios */
+  .sc{padding:22px 18px;}
+  /* robot banner */
+  #robot-banner{height:340px;}
+  #robot-banner .rbo{background:linear-gradient(to bottom,rgba(7,8,15,.88) 0%,rgba(7,8,15,.6) 100%);}
+  #robot-banner h2{font-size:clamp(1.4rem,5vw,2rem);}
+  #robot-banner p{font-size:.82rem;margin-top:10px;}
+  /* especialidades */
+  .esp-card{padding:22px 18px;}
+  .esp-ico-wrap{width:52px;height:52px;margin-bottom:14px;}
+  .esp-card h3{font-size:1.05rem;}
+  .esp-card p{font-size:.8rem;}
+  /* catalogo CTA */
+  .cat-cta{padding:26px 18px;}
+  .btn-catalog{width:100%;justify-content:center;font-size:.9rem;}
+  /* clientes */
+  .clients-hd{margin-bottom:32px;}
+  .logo-grid{grid-template-columns:repeat(4,1fr);}
+  .lgc{padding:16px 10px;min-height:72px;}
+  /* proceso */
+  .pstep{gap:14px;}
+  .pn{font-size:1.5rem;}
+  /* contacto */
+  .cwa{width:100%;justify-content:center;}
+  .emval{font-size:.76rem;word-break:break-all;}
+  /* footer */
+  .fi{flex-direction:column;align-items:flex-start;gap:8px;}
+}
+
+@media(max-width:480px){
+  .wrap{padding:0 14px;}
+  /* hero */
+  #hero{min-height:500px;}
+  .hero-logo-main{height:clamp(100px,44vw,180px);}
+  .hero-brand{margin-bottom:14px;}
+  .hero-brand-line{display:none;}
+  .htag{font-size:.64rem;letter-spacing:.1em;gap:7px;}
+  #hero h1{font-size:clamp(1.45rem,7vw,1.9rem);margin-bottom:10px;}
+  #hero .hsub{font-size:.82rem;margin-bottom:22px;}
+  /* stats */
+  .snum{font-size:1.85rem;}
+  .sbox{padding:18px 8px;}
+  .slbl{font-size:.67rem;}
+  /* nosotros */
+  .aimg img{height:240px;}
+  #nosotros-band{height:250px;}
+  .nband-line{display:none;}
+  .nband-num{font-size:clamp(2.8rem,12vw,4.5rem);}
+  .nband-txt h3{font-size:clamp(.95rem,4.5vw,1.3rem);}
+  .nband-txt p{font-size:.76rem;}
+  /* robot banner */
+  #robot-banner{height:280px;}
+  #robot-banner .rbo{background:rgba(7,8,15,.82);}
+  /* especialidades */
+  .esp-card{padding:18px 14px;}
+  .esp-ico-wrap{width:46px;height:46px;border-radius:10px;margin-bottom:12px;}
+  /* catalogo cards */
+  .cat-card{padding:14px;}
+  .cat-num{font-size:1.3rem;}
+  /* clientes */
+  .logo-grid{grid-template-columns:repeat(3,1fr);}
+  .lgc{padding:12px 6px;min-height:60px;}
+  .lgc img{max-height:30px;}
+  /* proceso */
+  .pstep{grid-template-columns:36px 1fr;gap:10px;padding:18px 0;}
+  .pn{font-size:1.2rem;}
+  .pb h3{font-size:.9rem;}
+  .pb p{font-size:.8rem;}
+  /* contacto */
+  .emval{font-size:.7rem;}
+  .ccval{font-size:.8rem;}
+  /* wa float */
+  .wa-float{width:46px;height:46px;bottom:16px;right:16px;}
+}
+
+@media(max-width:360px){
+  .hero-logo-main{height:clamp(90px,40vw,160px);}
+  #hero h1{font-size:1.35rem;}
+  .logo-grid{grid-template-columns:repeat(2,1fr);}
+  .snum{font-size:1.6rem;}
+  .sbox{padding:16px 6px;}
+  .nband-num{font-size:2.6rem;}
+}
+</style>
+</head>
+<body>
+
+<a class="wa-float" href="https://wa.me/5491168414057" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm0 2a8 8 0 1 1 0 16 8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 0 1 12 4zm-2.2 4.4c-.2 0-.5 0-.7.3-.2.3-.9 1-.9 2.2s.9 2.5 1 2.7c.1.1 1.7 2.7 4.4 3.7 2.2.8 2.2.6 2.6.6.4 0 1.4-.5 1.6-1.1.2-.6.2-1.1.1-1.2-.1-.1-1-.5-1.4-.7-.4-.2-.6-.3-.9.1-.3.4-1 1.2-1.2 1.4-.2.2-.4.2-.7.1-1.6-.7-2.9-2-3.6-3.5-.1-.3 0-.5.1-.6l.5-.6c.1-.2.2-.4.1-.6-.1-.3-.7-1.6-.9-2-.1-.2-.3-.3-.6-.3z"/></svg>
+</a>
+
+<nav>
+  <div class="wrap nav-in">
+    <a href="#hero" style="display:flex;align-items:center;gap:10px;">
+      <img src="assets/logo-WA.png" alt="Wartung Automation" class="nav-logo" id="nli" onerror="this.style.display='none';document.getElementById('nlt').style.display='block'">
+      <span class="nav-logo-txt" id="nlt" style="display:none">WARTUNG<span>.</span></span>
+    </a>
+    <div class="nl" id="nl">
+      <a href="#nosotros">Nosotros</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#especialidades">Especialidades</a>
+      <a href="catalogo.html" target="_blank">Catálogo</a>
+      <a href="#clientes">Clientes</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <a href="https://wa.me/5491168414057" target="_blank" rel="noopener" class="ncta">Consultar ahora</a>
+    <div class="burg" id="burg"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <img class="hero-img" src="https://images.unsplash.com/photo-1581092160607-ee22731c9df1?auto=format&fit=crop&w=1920&q=80" alt="Automatización industrial">
+  <div class="hero-ov"></div>
+  <div class="wrap hero-c rv">
+    <div class="hero-brand">
+      <div class="hero-brand-glow"></div>
+      <img src="assets/logo-WA.png" class="hero-logo-main" alt="Wartung Automation">
+      <div class="hero-brand-line"></div>
+    </div>
+    <div class="htag">Merlo, Buenos Aires · Desde 2000</div>
+    <h1>Automatización y<br>Control <em>Industrial</em></h1>
+    <p class="hsub">Soluciones integrales en PLCs, variadores, sensores, seguridad y servicio técnico especializado para la industria argentina.</p>
+    <div class="hbtns">
+      <a href="https://wa.me/5491168414057" target="_blank" rel="noopener" class="btn-a">Consultar por WhatsApp</a>
+      <a href="catalogo.html" target="_blank" class="btn-b">Ver catálogo</a>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mwrap">
+  <div class="mtrack">
+    <span class="mi"><span>·</span>Allen-Bradley</span><span class="mi"><span>·</span>Siemens</span><span class="mi"><span>·</span>Mitsubishi</span><span class="mi"><span>·</span>SICK</span><span class="mi"><span>·</span>Keyence</span><span class="mi"><span>·</span>Pilz</span><span class="mi"><span>·</span>WAGO</span><span class="mi"><span>·</span>Beckhoff</span><span class="mi"><span>·</span>Schneider</span><span class="mi"><span>·</span>Rittal</span><span class="mi"><span>·</span>Honeywell</span><span class="mi"><span>·</span>Danfoss</span><span class="mi"><span>·</span>Lenze</span><span class="mi"><span>·</span>Pepperl+Fuchs</span><span class="mi"><span>·</span>IFM</span><span class="mi"><span>·</span>Turck</span><span class="mi"><span>·</span>Banner</span><span class="mi"><span>·</span>Wenglor</span><span class="mi"><span>·</span>Leuze</span><span class="mi"><span>·</span>Panasonic</span><span class="mi"><span>·</span>Endress+Hauser</span><span class="mi"><span>·</span>Phoenix Contact</span><span class="mi"><span>·</span>Moxa</span>
+    <!-- duplicate -->
+    <span class="mi"><span>·</span>Allen-Bradley</span><span class="mi"><span>·</span>Siemens</span><span class="mi"><span>·</span>Mitsubishi</span><span class="mi"><span>·</span>SICK</span><span class="mi"><span>·</span>Keyence</span><span class="mi"><span>·</span>Pilz</span><span class="mi"><span>·</span>WAGO</span><span class="mi"><span>·</span>Beckhoff</span><span class="mi"><span>·</span>Schneider</span><span class="mi"><span>·</span>Rittal</span><span class="mi"><span>·</span>Honeywell</span><span class="mi"><span>·</span>Danfoss</span><span class="mi"><span>·</span>Lenze</span><span class="mi"><span>·</span>Pepperl+Fuchs</span><span class="mi"><span>·</span>IFM</span><span class="mi"><span>·</span>Turck</span><span class="mi"><span>·</span>Banner</span><span class="mi"><span>·</span>Wenglor</span><span class="mi"><span>·</span>Leuze</span><span class="mi"><span>·</span>Panasonic</span><span class="mi"><span>·</span>Endress+Hauser</span><span class="mi"><span>·</span>Phoenix Contact</span><span class="mi"><span>·</span>Moxa</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="wrap">
+    <div class="sgrid rv">
+      <div class="sbox"><div class="snum" data-t="25">0</div><div class="slbl">Años de experiencia industrial</div></div>
+      <div class="sbox"><div class="snum" data-t="2695" data-s="+">0</div><div class="slbl">Productos en catálogo</div></div>
+      <div class="sbox"><div class="snum" data-t="23">0</div><div class="slbl">Marcas líderes representadas</div></div>
+      <div class="sbox"><div class="snum" data-t="500" data-s="+">0</div><div class="slbl">Empresas que confían en nosotros</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTROS -->
+<section id="nosotros">
+  <div class="wrap">
+    <div class="agrid">
+      <div class="aimg rv">
+        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=900&q=80" alt="Ingeniero industrial">
+        <div class="abadge"><strong>+25</strong><span>Años en la industria</span></div>
+      </div>
+      <div class="atxt rv">
+        <span class="atag">Quiénes somos</span>
+        <h2>Líderes en automatización y seguridad industrial</h2>
+        <p>Wartung Automation es líder en la provisión de productos y servicios industriales especializados en sistemas de seguridad para protección personal y maquinarias, incluyendo control y automatización en las mismas.</p>
+        <p>Ofrecemos un amplio catálogo de sensores, incluyendo fotoeléctricos, barreras, reflectivos, visión, horquilla resonante, detectores de etiquetas y tacos, láser, medición de distancia, códigos de barras, scanner y cámaras.</p>
+        <p>Nuestra empresa se destaca por nuestra dedicación a la calidad, la innovación y el servicio al cliente. Conocé más sobre nuestra historia, nuestro equipo y cómo marcamos la diferencia en la industria.</p>
+        <div class="apills">
+          <div class="ap"><strong>Seguridad</strong> de máquinas y personas</div>
+          <div class="ap"><strong>Sensores</strong> y visión industrial</div>
+          <div class="ap"><strong>Control</strong> y automatización</div>
+          <div class="ap"><strong>Servicio técnico</strong> especializado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTROS BAND -->
+<section id="nosotros-band">
+  <img src="https://images.unsplash.com/photo-1565689478506-adab8d1a7cbb?auto=format&fit=crop&w=1920&q=80" alt="Planta industrial de automatización">
+  <div class="wrap nband-c rv">
+    <div class="nband-stat">
+      <div class="nband-num">25</div>
+      <div class="nband-line"></div>
+      <div class="nband-txt">
+        <h3>Años en la industria argentina</h3>
+        <p>Desde el año 2000, acompañamos a las empresas más importantes del país con soluciones técnicas de primer nivel en automatización, control y seguridad industrial.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="wrap">
+    <div class="sh rv"><span class="slabel">Servicios</span><h2>Lo que hacemos por tu empresa</h2></div>
+    <div class="svgrid rv">
+      <div class="sc"><div class="scn">01</div><h3>Servicio Técnico PLCs y Drives</h3><p>Diagnóstico, reparación y puesta en marcha de PLCs, variadores, servos y pantallas HMI de todas las marcas.</p></div>
+      <div class="sc"><div class="scn">02</div><h3>Instalaciones Industriales</h3><p>Instalaciones eléctricas y electrónicas industriales con los más altos estándares de seguridad y calidad.</p></div>
+      <div class="sc"><div class="scn">03</div><h3>Mantenimiento y Reparación</h3><p>Mantenimiento preventivo y correctivo de maquinaria industrial. Reducí tiempos de parada no planificada.</p></div>
+      <div class="sc"><div class="scn">04</div><h3>Calibración de Instrumentos</h3><p>Calibración de lazos analógicos 4–20 mA y transmisores de proceso para mediciones precisas y trazables.</p></div>
+      <div class="sc"><div class="scn">05</div><h3>Migración y Modernización</h3><p>Actualización de sistemas obsoletos: PLCs, drives y HMI sin detener tu producción.</p></div>
+      <div class="sc"><div class="scn">06</div><h3>Suministro de Equipos y Repuestos</h3><p>Comercialización y búsqueda de repuestos industriales con acceso a proveedores internacionales.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROBOT BANNER -->
+<section id="robot-banner">
+  <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1600&q=80" alt="Brazo robótico ABB industrial">
+  <div class="rbo"></div>
+  <div class="wrap rbc rv">
+    <div>
+      <span class="slabel" style="display:block;margin-bottom:12px;">Robótica e integración</span>
+      <h2>Brazos robóticos,<br>servos y <em>automatización</em><br>de precisión</h2>
+      <p>Trabajamos con los sistemas de servocontrol y accionamiento más avanzados del mercado para integrar movimiento preciso en tus procesos productivos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ESPECIALIDADES ===== -->
+<section id="especialidades">
+  <div class="wrap">
+    <div class="rv" style="max-width:640px;">
+      <span class="slabel">Nuestras especialidades</span>
+      <h2 style="font-size:clamp(1.9rem,3vw,2.6rem);font-weight:800;line-height:1.1;margin-bottom:14px;">Explorá los productos<br>por especialidad</h2>
+      <p style="color:var(--dim);font-size:.95rem;line-height:1.65;">Hacé clic en cualquier especialidad para ver todos los productos disponibles en el catálogo, ya filtrados.</p>
+    </div>
+    <div class="esp-grid">
+
+      <!-- DETECCIÓN -->
+      <a href="catalogo.html?cat=det" target="_blank" class="esp-card rv"
+        style="--esp-c:#0EA5E9;"
+        onmouseenter="this.style.borderColor='#0EA5E9';this.style.boxShadow='0 24px 60px -12px rgba(14,165,233,.3)'"
+        onmouseleave="this.style.borderColor='';this.style.boxShadow=''">
+        <div class="esp-ico-wrap" style="background:rgba(14,165,233,.12);">
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="24" cy="24" rx="19" ry="13" stroke="#0EA5E9" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="7" stroke="#0EA5E9" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="3" fill="#0EA5E9"/>
+            <line x1="4" y1="24" x2="10" y2="24" stroke="#0EA5E9" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="38" y1="24" x2="44" y2="24" stroke="#0EA5E9" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="7" y1="15" x2="12" y2="18" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+            <line x1="7" y1="33" x2="12" y2="30" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+            <line x1="41" y1="15" x2="36" y2="18" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+            <line x1="41" y1="33" x2="36" y2="30" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+          </svg>
+        </div>
+        <h3>Detección</h3>
+        <p>Sensores fotoeléctricos, barreras, láseres, visión artificial, detectores de etiquetas y tacos, scanner de códigos de barra y cámaras industriales.</p>
+        <span class="esp-cta" style="color:#0EA5E9;">
+          Ver productos
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </a>
+
+      <!-- SEGURIDAD EN MÁQUINAS -->
+      <a href="catalogo.html?q=safety" target="_blank" class="esp-card rv"
+        style="--esp-c:#22C55E;"
+        onmouseenter="this.style.borderColor='#22C55E';this.style.boxShadow='0 24px 60px -12px rgba(34,197,94,.28)'"
+        onmouseleave="this.style.borderColor='';this.style.boxShadow=''">
+        <div class="esp-ico-wrap" style="background:rgba(34,197,94,.12);">
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 5L7 12v11c0 10.5 7.2 20.3 17 23 9.8-2.7 17-12.5 17-23V12L24 5z" stroke="#22C55E" stroke-width="2.5" fill="rgba(34,197,94,.08)"/>
+            <path d="M16 25l5.5 5.5 10-10" stroke="#22C55E" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="24" cy="19" r="4" stroke="#22C55E" stroke-width="2" opacity=".6"/>
+            <path d="M20 19h8" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+            <path d="M24 15v8" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          </svg>
+        </div>
+        <h3>Seguridad en Máquinas</h3>
+        <p>Controladores de seguridad, relés de seguridad, cortinas de luz, paradas de emergencia y sistemas de protección para operarios y equipos.</p>
+        <span class="esp-cta" style="color:#22C55E;">
+          Ver productos
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </a>
+
+      <!-- REGULACIÓN Y CONTROL -->
+      <a href="catalogo.html?cat=plc" target="_blank" class="esp-card rv"
+        style="--esp-c:#8B5CF6;"
+        onmouseenter="this.style.borderColor='#8B5CF6';this.style.boxShadow='0 24px 60px -12px rgba(139,92,246,.28)'"
+        onmouseleave="this.style.borderColor='';this.style.boxShadow=''">
+        <div class="esp-ico-wrap" style="background:rgba(139,92,246,.12);">
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="11" y="11" width="26" height="26" rx="4" stroke="#8B5CF6" stroke-width="2.5" fill="rgba(139,92,246,.08)"/>
+            <rect x="17" y="17" width="14" height="14" rx="2" stroke="#8B5CF6" stroke-width="2"/>
+            <line x1="17" y1="5" x2="17" y2="11" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="24" y1="5" x2="24" y2="11" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="31" y1="5" x2="31" y2="11" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="17" y1="37" x2="17" y2="43" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="24" y1="37" x2="24" y2="43" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="31" y1="37" x2="31" y2="43" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="5" y1="17" x2="11" y2="17" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="5" y1="24" x2="11" y2="24" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="5" y1="31" x2="11" y2="31" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="37" y1="17" x2="43" y2="17" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="37" y1="24" x2="43" y2="24" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+            <line x1="37" y1="31" x2="43" y2="31" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Regulación y Control</h3>
+        <p>PLCs, variadores de frecuencia, servomotores, HMI, convertidores, módulos de E/S y sistemas de automatización programable.</p>
+        <span class="esp-cta" style="color:#8B5CF6;">
+          Ver productos
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </a>
+
+      <!-- POTENCIA -->
+      <a href="catalogo.html?cat=pot" target="_blank" class="esp-card rv"
+        style="--esp-c:#F97316;"
+        onmouseenter="this.style.borderColor='#F97316';this.style.boxShadow='0 24px 60px -12px rgba(249,115,22,.28)'"
+        onmouseleave="this.style.borderColor='';this.style.boxShadow=''">
+        <div class="esp-ico-wrap" style="background:rgba(249,115,22,.12);">
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M27 4L9 27h16L18 44l21-23H23L27 4z" stroke="#F97316" stroke-width="2.5" stroke-linejoin="round" fill="rgba(249,115,22,.1)"/>
+          </svg>
+        </div>
+        <h3>Potencia</h3>
+        <p>Contactores, guardamotores, interruptores termomagnéticos, fusibles, disyuntores, variadores y accionamientos para motores industriales.</p>
+        <span class="esp-cta" style="color:#F97316;">
+          Ver productos
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATÁLOGO ===== -->
+<section id="productos">
+  <div class="wrap">
+    <div class="ph rv" style="display:block;margin-bottom:40px;">
+      <span class="slabel">Catálogo completo</span>
+      <h2 style="font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;line-height:1.1;margin-bottom:10px;">+2.695 productos industriales</h2>
+      <p style="color:var(--dim);font-size:.95rem;max-width:560px;line-height:1.6;">Catálogo completo con 181 marcas, imágenes reales y descripciones técnicas de cada producto. Buscá por nombre, SKU o filtrá por categoría y marca.</p>
+    </div>
+    <div class="cat-grid rv">
+      <div class="cat-card"><div class="cat-dot" style="background:#8B5CF6"></div><h3>Controladores PLC</h3><p>Allen-Bradley, Siemens, Mitsubishi, WAGO, Beckhoff, B&R, Omron, HMI</p><div class="cat-num" style="color:#8B5CF6">982</div></div>
+      <div class="cat-card"><div class="cat-dot" style="background:#0EA5E9"></div><h3>Detección Sensores</h3><p>SICK, Keyence, Pilz, Elobau, Banner, Turck, IFM, Pepperl+Fuchs, Leuze</p><div class="cat-num" style="color:#0EA5E9">956</div></div>
+      <div class="cat-card"><div class="cat-dot" style="background:#10B981"></div><h3>Potencia</h3><p>Servos Mitsubishi, Elau, Panasonic, Rittal, Allen-Bradley, Schneider, Lenze</p><div class="cat-num" style="color:#10B981">502</div></div>
+      <div class="cat-card"><div class="cat-dot" style="background:#F59E0B"></div><h3>Process Instrumentation</h3><p>Honeywell, Danfoss, Moxa, Phoenix Contact, Endress+Hauser, Siemens</p><div class="cat-num" style="color:#F59E0B">255</div></div>
+    </div>
+    <div class="cat-cta rv">
+      <p>Explorá el catálogo completo con búsqueda en tiempo real, filtros por marca y categoría, galería de imágenes y consulta directa por WhatsApp de cada producto.</p>
+      <a href="catalogo.html" target="_blank" class="btn-catalog">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Ver catálogo completo
+      </a>
+    </div>
+  </div>
+</section>
+
+  </div><!-- /wrap -->
+</section>
+
+<!-- CLIENTES -->
+<section id="clientes">
+  <div class="wrap">
+    <div class="clients-hd rv">
+      <div class="cq">Empresas que <em>confían</em> en Wartung Automation</div>
+      <p class="cb">Desde 2000 acompañamos a cientos de empresas de todos los sectores industriales con soluciones técnicas a medida. Estas son algunas de las compañías que forman parte de nuestra historia.</p>
+    </div>
+    <div class="logo-grid rv">
+      <div class="lgc"><img src="assets/clientes/arcor.svg" alt="Arcor"></div>
+      <div class="lgc"><img src="assets/clientes/poen.svg" alt="Poen"></div>
+      <div class="lgc"><img src="assets/clientes/quickfood.svg" alt="Quickfood"></div>
+      <div class="lgc"><img src="assets/clientes/Protwell.png" alt="Protwell"></div>
+      <div class="lgc"><img src="assets/clientes/oblack.webp" alt="Oblak"></div>
+      <div class="lgc"><img src="assets/clientes/vidrieria-calello.png" alt="Vidriería Calello"></div>
+      <div class="lgc"><img src="assets/clientes/sintaryc.svg" alt="Sintaryc"></div>
+      <div class="lgc"><img src="assets/clientes/cartocor.svg" alt="Cartocor"></div>
+      <div class="lgc"><img src="assets/clientes/molfino.svg" alt="Molfino"></div>
+      <div class="lgc"><img src="assets/clientes/ecopulpo.svg" alt="Eco Pulpo"></div>
+      <div class="lgc"><img src="assets/clientes/Fadel-logo.png" alt="Fadel"></div>
+      <div class="lgc"><img src="assets/clientes/metalsa.svg" alt="Metalsa"></div>
+      <div class="lgc"><img src="assets/clientes/WEG.png" alt="WEG"></div>
+      <div class="lgc"><img src="assets/clientes/Porta-Hnoslogo-320.png" alt="Porta Hnos"></div>
+      <div class="lgc"><img src="assets/clientes/royalcanin.svg" alt="Royal Canin"></div>
+      <div class="lgc"><img src="assets/clientes/dana.svg" alt="Dana"></div>
+      <div class="lgc"><img src="assets/clientes/felfort.svg" alt="Felfort"></div>
+      <div class="lgc"><img src="assets/clientes/casasco.png" alt="Casasco"></div>
+      <div class="lgc"><img src="assets/clientes/celomat.png" alt="Celomat"></div>
+      <div class="lgc"><img src="assets/clientes/rafaela elimentos .png" alt="Rafaela Alimentos"></div>
+      <div class="lgc"><img src="assets/clientes/Mirgor_company_logo.png" alt="Mirgor"></div>
+      <div class="lgc"><img src="assets/clientes/logo petropack.png" alt="Petropack"></div>
+      <div class="lgc"><img src="assets/clientes/KLONAL.png" alt="Klonal"></div>
+      <div class="lgc"><img src="assets/clientes/Prysmian_Logo.svg.png" alt="Prysmian"></div>
+      <div class="lgc"><img src="assets/clientes/opulens.png" alt="Opulens"></div>
+      <div class="lgc"><img src="assets/clientes/sintecrom.svg" alt="Sintecrom"></div>
+      <div class="lgc"><img src="assets/clientes/gorina.avif" alt="Gorina"></div>
+      <div class="lgc"><img src="assets/clientes/molino cañuelas.png" alt="Molino Cañuelas"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section id="proceso">
+  <div class="wrap">
+    <div class="rv"><span class="slabel">Cómo trabajamos</span><h2 style="font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;line-height:1.1;">Del diagnóstico a la solución</h2></div>
+    <div class="psteps">
+      <div class="pstep rv"><div class="pn">01</div><div class="pb"><h3>Diagnóstico inicial</h3><p>Analizamos tu necesidad — instalación nueva, reparación o mantenimiento — y definimos el alcance contigo.</p></div></div>
+      <div class="pstep rv"><div class="pn">02</div><div class="pb"><h3>Presupuesto detallado</h3><p>Enviamos un presupuesto claro con tiempos estimados y costo de materiales. Sin sorpresas, sin costos ocultos.</p></div></div>
+      <div class="pstep rv"><div class="pn">03</div><div class="pb"><h3>Ejecución técnica</h3><p>Nuestros técnicos especializados ejecutan el trabajo con los más altos estándares de calidad y seguridad industrial.</p></div></div>
+      <div class="pstep rv"><div class="pn">04</div><div class="pb"><h3>Prueba y puesta en marcha</h3><p>Verificamos el correcto funcionamiento de todos los sistemas antes de dar por finalizado el trabajo.</p></div></div>
+      <div class="pstep rv"><div class="pn">05</div><div class="pb"><h3>Soporte post-instalación</h3><p>Seguimos disponibles después de cada trabajo. Si surge algún inconveniente, lo resolvemos.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="wrap">
+    <div class="cgrid">
+      <div class="cl rv">
+        <span class="slabel">Contacto</span>
+        <h2>Hablemos de tu proyecto</h2>
+        <p class="csub">Estamos en Merlo, Buenos Aires, y atendemos empresas de todo el país. Consultanos sin compromiso.</p>
+        <a href="https://wa.me/5491168414057" target="_blank" rel="noopener" class="cwa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm0 2a8 8 0 1 1 0 16 8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 0 1 12 4zm-2.2 4.4c-.2 0-.5 0-.7.3-.2.3-.9 1-.9 2.2s.9 2.5 1 2.7c.1.1 1.7 2.7 4.4 3.7 2.2.8 2.2.6 2.6.6.4 0 1.4-.5 1.6-1.1.2-.6.2-1.1.1-1.2-.1-.1-1-.5-1.4-.7-.4-.2-.6-.3-.9.1-.3.4-1 1.2-1.2 1.4-.2.2-.4.2-.7.1-1.6-.7-2.9-2-3.6-3.5-.1-.3 0-.5.1-.6l.5-.6c.1-.2.2-.4.1-.6-.1-.3-.7-1.6-.9-2-.1-.2-.3-.3-.6-.3z"/></svg>
+          Escribinos por WhatsApp
+        </a>
+        <div class="emstack">
+          <a class="emrow" href="mailto:ventas@wartung-automation.com.ar"><div class="emdept">Ventas</div><div class="emval">ventas@wartung-automation.com.ar</div></a>
+          <a class="emrow" href="mailto:servicio-tecnico@wartung-automation.com.ar"><div class="emdept">Servicio Técnico</div><div class="emval">servicio-tecnico@wartung-automation.com.ar</div></a>
+          <a class="emrow" href="mailto:administracion@wartung-automation.com.ar"><div class="emdept">Administración</div><div class="emval">administración@wartung-automation.com.ar</div></a>
+        </div>
+      </div>
+      <div class="ccards rv">
+        <a class="ccard" href="tel:+5491168414057">
+          <div class="ccico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg></div>
+          <div><div class="cclbl">Teléfono</div><div class="ccval">+54 11-6841-4057 / 4655</div></div>
+        </a>
+        <div class="ccard">
+          <div class="ccico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="cclbl">Dirección</div><div class="ccval">Cesar Garat 540, Merlo (1722)<br>Buenos Aires, Argentina</div></div>
+        </div>
+        <a class="ccard" href="https://www.instagram.com/wartungaut/" target="_blank" rel="noopener">
+          <div class="ccico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="var(--cyan)" stroke="none"/></svg></div>
+          <div><div class="cclbl">Instagram</div><div class="ccval">@wartungaut</div></div>
+        </a>
+        <a class="ccard" href="https://www.facebook.com/WartungAutomation" target="_blank" rel="noopener">
+          <div class="ccico"><svg width="17" height="17" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
+          <div><div class="cclbl">Facebook</div><div class="ccval">WartungAutomation</div></div>
+        </a>
+        <div class="ccard" style="background:rgba(14,165,233,.06);border-color:rgba(14,165,233,.2);">
+          <div class="ccico" style="background:rgba(14,165,233,.12)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><div class="cclbl" style="color:var(--cyan)">Atención</div><div class="ccval" style="font-size:.82rem;">Lun–Vie · 8:00 a 18:00 hs</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap fi">
+    <span class="fc">© 2026 Wartung Automation · Merlo, Buenos Aires, Argentina</span>
+    <div class="fl">
+      <a href="https://www.instagram.com/wartungaut/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/WartungAutomation" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:ventas@wartung-automation.com.ar">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Mobile nav
+  const burg=document.getElementById('burg'),nl=document.getElementById('nl');
+  burg.addEventListener('click',()=>nl.classList.toggle('open'));
+  nl.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nl.classList.remove('open')));
+
+  // Reveal
+  const rObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');rObs.unobserve(e.target);}});},{threshold:.08});
+  document.querySelectorAll('.rv').forEach(el=>rObs.observe(el));
+
+  // Counters
+  function count(el){
+    const t=parseInt(el.dataset.t),s=el.dataset.s||'',dur=1800,start=performance.now();
+    (function tick(now){
+      const p=Math.min((now-start)/dur,1),e=1-Math.pow(1-p,3);
+      el.textContent=Math.floor(e*t).toLocaleString('es-AR')+(p>=1?s:'');
+      if(p<1)requestAnimationFrame(tick);
+    })(start);
+  }
+  const cObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){count(e.target);cObs.unobserve(e.target);}});},{threshold:.5});
+  document.querySelectorAll('[data-t]').forEach(el=>cObs.observe(el));
+
+  // Logo fallback
+  const li=document.getElementById('nli'),lt=document.getElementById('nlt');
+  if(li){li.addEventListener('error',()=>{li.style.display='none';lt.style.display='block';});
+    if(!li.complete||li.naturalWidth===0){li.style.display='none';lt.style.display='block';}}
+})();
+</script>
+</body>
+</html>

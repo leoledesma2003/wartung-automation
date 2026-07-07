@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 90" width="240" height="90">
+  <rect x="10" y="20" width="14" height="50" fill="#B0BEC5" transform="skewX(-15)"/>
+  <rect x="30" y="20" width="14" height="50" fill="#78909C" transform="skewX(-15)"/>
+  <rect x="50" y="20" width="14" height="50" fill="#546E7A" transform="skewX(-15)"/>
+  <text x="155" y="58" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#37474F" text-anchor="middle" letter-spacing="2">Metalsa</text>
+</svg>
