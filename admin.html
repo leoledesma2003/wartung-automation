@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Panel Administrativo — Wartung Automation</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07080F;--bg2:#0B0D18;--bg3:#111827;--brd:rgba(255,255,255,.08);--text:#F1F5F9;--dim:#64748B;--cyan:#0EA5E9;--blue:#2563EB;--err:#EF4444;--ok:#10B981;--warn:#F59E0B;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:var(--bg2);border:1px solid var(--brd);border-radius:16px;width:100%;max-width:400px;padding:36px 32px;}
+.login-card h1{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:4px;}
+.login-card p{font-size:.84rem;color:var(--dim);margin-bottom:24px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:.72rem;font-weight:600;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;}
+.field input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:7px;padding:11px 14px;color:var(--text);font-size:.88rem;font-family:'Inter',sans-serif;outline:none;}
+.field input:focus{border-color:var(--cyan);}
+.btn{width:100%;padding:13px;background:var(--cyan);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn:hover{opacity:.88;}
+.err-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5;padding:10px 14px;border-radius:7px;font-size:.82rem;margin-bottom:12px;display:none;}
+/* PANEL */
+.panel{display:none;}
+.panel.on{display:block;}
+sidebar,.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--brd);display:flex;flex-direction:column;z-index:20;}
+.sb-brand{padding:20px 20px 16px;border-bottom:1px solid var(--brd);}
+.sb-brand img{height:28px;mix-blend-mode:screen;margin-bottom:8px;display:block;}
+.sb-brand .title{font-size:.78rem;font-weight:700;color:var(--text);}
+.sb-brand .sub{font-size:.68rem;color:var(--dim);}
+nav{flex:1;padding:12px 0;}
+.nav-item{display:block;padding:10px 20px;font-size:.82rem;font-weight:500;color:var(--dim);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;font-family:'Inter',sans-serif;transition:color .15s;}
+.nav-item:hover{color:var(--text);}
+.nav-item.on{color:var(--cyan);background:rgba(14,165,233,.07);border-right:2px solid var(--cyan);}
+.nav-badge{background:var(--cyan);color:#fff;font-size:.6rem;font-weight:800;padding:1px 5px;border-radius:10px;margin-left:6px;display:inline-block;}
+.sb-footer{padding:16px 20px;border-top:1px solid var(--brd);}
+.sb-footer button{background:none;border:none;color:var(--dim);font-size:.75rem;cursor:pointer;font-family:'Inter',sans-serif;padding:0;}
+.sb-footer button:hover{color:#ef4444;}
+.main{margin-left:220px;min-height:100vh;}
+.topbar{padding:16px 28px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;}
+.topbar h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;}
+.content{padding:24px 28px;}
+/* TABS CONTENT */
+.tab-pane{display:none;}
+.tab-pane.on{display:block;}
+/* CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px 20px;}
+.stat-card .label{font-size:.72rem;color:var(--dim);font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
+.stat-card .value{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);margin-top:4px;}
+.stat-card .sub{font-size:.72rem;color:var(--dim);margin-top:2px;}
+/* SEARCH / FILTER */
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.toolbar input,.toolbar select{background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:6px;padding:8px 14px;color:var(--text);font-size:.85rem;font-family:'Inter',sans-serif;outline:none;}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--cyan);}
+.toolbar input{flex:1;min-width:160px;}
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--brd);}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{background:var(--bg3);padding:10px 14px;text-align:left;font-size:.7rem;font-weight:700;color:var(--dim);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 14px;border-top:1px solid var(--brd);vertical-align:middle;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.badge{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.04em;}
+.badge-in{background:rgba(16,185,129,.15);color:#10B981;border:1px solid rgba(16,185,129,.25);}
+.badge-out{background:rgba(100,116,139,.1);color:var(--dim);border:1px solid var(--brd);}
+.badge-backorder{background:rgba(14,165,233,.12);color:#0EA5E9;border:1px solid rgba(14,165,233,.2);}
+/* INLINE EDIT */
+.edit-price{background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:4px;padding:5px 8px;color:var(--text);font-size:.8rem;font-family:'Inter',sans-serif;width:120px;outline:none;}
+.edit-price:focus{border-color:var(--cyan);}
+.edit-select{background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:4px;padding:5px 8px;color:var(--text);font-size:.75rem;font-family:'Inter',sans-serif;outline:none;}
+.save-btn{background:var(--cyan);color:#fff;border:none;border-radius:4px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+.save-btn:hover{opacity:.88;}
+.saved-indicator{font-size:.7rem;color:var(--ok);margin-left:6px;display:none;}
+/* QUOTES */
+.quote-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+.quote-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.quote-id{font-size:.7rem;font-weight:700;color:var(--cyan);font-family:'Syne',sans-serif;}
+.quote-date{font-size:.72rem;color:var(--dim);}
+.quote-client{font-size:.88rem;font-weight:700;margin-bottom:2px;}
+.quote-cuit{font-size:.75rem;color:var(--dim);}
+.quote-total{font-size:1.1rem;font-weight:800;color:var(--cyan);}
+.quote-items-list{margin-top:10px;border-top:1px solid var(--brd);padding-top:10px;}
+.qi{font-size:.78rem;color:var(--dim);padding:3px 0;}
+.qi strong{color:var(--text);}
+/* CLIENTS */
+.client-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:16px 20px;margin-bottom:10px;}
+.client-card h3{font-size:.92rem;font-weight:700;margin-bottom:2px;}
+.client-card .meta{font-size:.76rem;color:var(--dim);line-height:1.6;}
+.client-card .cuit-tag{font-size:.72rem;font-weight:700;color:var(--cyan);margin-top:4px;}
+/* CSV UPLOAD */
+.upload-zone{border:2px dashed var(--brd);border-radius:10px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--cyan);background:rgba(14,165,233,.04);}
+.upload-zone h3{font-size:1rem;font-weight:700;margin-bottom:8px;}
+.upload-zone p{font-size:.82rem;color:var(--dim);}
+.upload-zone input[type=file]{display:none;}
+.info-box{background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:16px;margin-top:16px;font-size:.82rem;color:var(--dim);line-height:1.7;}
+.info-box strong{color:var(--text);}
+.progress{margin-top:12px;display:none;}
+.prog-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:6px;}
+.prog-fill{height:100%;background:var(--cyan);border-radius:3px;transition:width .3s;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <h1>Panel Admin</h1>
+    <p>Wartung Automation — Acceso exclusivo</p>
+    <div class="err-msg" id="loginErr"></div>
+    <div class="field"><label>Usuario</label><input type="text" id="adminUser" placeholder="wartung"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
+    <button class="btn" onclick="doAdminLogin()">Ingresar</button>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="panel" id="adminPanel">
+  <div class="sidebar">
+    <div class="sb-brand">
+      <img src="assets/logo-WA.png" alt="Wartung" onerror="this.style.display='none'">
+      <div class="title">Wartung Admin</div>
+      <div class="sub">Panel de gestión</div>
+    </div>
+    <nav>
+      <button class="nav-item on" onclick="showTab('dashboard')">Dashboard</button>
+      <button class="nav-item" onclick="showTab('productos')">Productos &amp; Precios</button>
+      <button class="nav-item" onclick="showTab('cotizaciones')">Cotizaciones <span class="nav-badge" id="qBadge">0</span></button>
+      <button class="nav-item" onclick="showTab('clientes')">Clientes</button>
+      <button class="nav-item" onclick="showTab('carga')">Cargar productos (CSV)</button>
+    </nav>
+    <div class="sb-footer">
+      <button onclick="doAdminLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h2 id="tabTitle">Dashboard</h2>
+      <a href="catalogo.html" target="_blank" style="font-size:.8rem;color:var(--dim);text-decoration:none;">Ver catálogo →</a>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="tab-pane on" id="tab-dashboard">
+        <div class="stat-grid" id="statsGrid"></div>
+        <div style="font-size:.9rem;font-weight:600;margin-bottom:12px;">Últimas cotizaciones</div>
+        <div id="recentQuotes"></div>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <div class="tab-pane" id="tab-productos">
+        <p style="font-size:.82rem;color:var(--dim);margin-bottom:16px;">
+          Edita precio, IVA y estado de stock de cada producto. Los cambios se guardan localmente y se aplican en el catálogo.
+        </p>
+        <div class="toolbar">
+          <input type="search" id="prodSearch" placeholder="Buscar por nombre o SKU…" oninput="filterProds()">
+          <select id="prodStockFilter" onchange="filterProds()">
+            <option value="">Todo el stock</option>
+            <option value="in">En stock</option>
+            <option value="backorder">Bajo pedido</option>
+            <option value="out">Sin stock</option>
+          </select>
+          <select id="prodPriceFilter" onchange="filterProds()">
+            <option value="">Con y sin precio</option>
+            <option value="yes">Con precio</option>
+            <option value="no">Sin precio</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>SKU / Nombre</th>
+              <th>Precio (sin IVA)</th>
+              <th>% IVA</th>
+              <th>Stock</th>
+              <th>Qty</th>
+              <th>Guardar</th>
+            </tr></thead>
+            <tbody id="prodTable"></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 0;font-size:.78rem;color:var(--dim);" id="prodCount"></div>
+      </div>
+
+      <!-- COTIZACIONES -->
+      <div class="tab-pane" id="tab-cotizaciones">
+        <p style="font-size:.82rem;color:var(--dim);margin-bottom:16px;">Presupuestos generados por clientes desde el sitio web.</p>
+        <div id="quotesList"></div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div class="tab-pane" id="tab-clientes">
+        <p style="font-size:.82rem;color:var(--dim);margin-bottom:16px;">Clientes registrados en el sistema.</p>
+        <div id="clientsList"></div>
+      </div>
+
+      <!-- CARGA CSV -->
+      <div class="tab-pane" id="tab-carga">
+        <p style="font-size:.82rem;color:var(--dim);margin-bottom:20px;">
+          Arrastrá un archivo CSV de WooCommerce para actualizar el catálogo de productos. Solo actualiza precios y stock — el archivo <code>catalogo.html</code> se genera para descargar.
+        </p>
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('csvFile').click()">
+          <input type="file" id="csvFile" accept=".csv" onchange="handleCSV(this.files[0])">
+          <h3>Arrastrá el CSV aquí</h3>
+          <p>o hacé clic para seleccionar el archivo</p>
+          <p style="margin-top:8px;font-size:.7rem;">Formato: export de WooCommerce con columnas SKU, Name, Regular price, Sale price, In stock?, Stock</p>
+        </div>
+        <div class="info-box">
+          <strong>¿Cómo actualizar el catálogo completo?</strong><br>
+          1. Exportá el CSV desde WooCommerce<br>
+          2. Arrastralo aquí — se leerán precios y stock<br>
+          3. Los cambios se aplican al catálogo automáticamente<br>
+          4. Para cambios de nombres/descripciones, contactar al desarrollador
+        </div>
+        <div class="progress" id="csvProgress">
+          <div style="font-size:.82rem;color:var(--dim);" id="csvStatus">Procesando…</div>
+          <div class="prog-bar"><div class="prog-fill" id="csvBar" style="width:0%"></div></div>
+        </div>
+        <div id="csvResult" style="margin-top:16px;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────────────────
+var ADMIN_USER='wartung';
+var ADMIN_PASS='WA2025admin';
+
+function doAdminLogin(){
+  var u=document.getElementById('adminUser').value;
+  var p=document.getElementById('adminPass').value;
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    sessionStorage.setItem('wt_admin','1');
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('adminPanel').classList.add('on');
+    initPanel();
+  }else{
+    var el=document.getElementById('loginErr');
+    el.textContent='Usuario o contraseña incorrectos.';el.style.display='block';
+  }
+}
+
+function doAdminLogout(){
+  sessionStorage.removeItem('wt_admin');
+  location.reload();
+}
+
+// ── TAB NAVIGATION ─────────────────────────────────────────────────────────
+var tabTitles={dashboard:'Dashboard',productos:'Productos & Precios',cotizaciones:'Cotizaciones',clientes:'Clientes',carga:'Cargar productos (CSV)'};
+function showTab(t){
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('tab-'+t).classList.add('on');
+  var btn=document.querySelector('[onclick*="\''+t+'\'"]');
+  if(btn)btn.classList.add('on');
+  document.getElementById('tabTitle').textContent=tabTitles[t]||t;
+  if(t==='productos')renderProducts();
+  if(t==='cotizaciones')renderQuotes();
+  if(t==='clientes')renderClients();
+}
+
+// ── DATA ───────────────────────────────────────────────────────────────────
+function getOverrides(){try{return JSON.parse(localStorage.getItem('wt_product_overrides')||'{}');}catch{return{};}}
+function saveOverrides(obj){localStorage.setItem('wt_product_overrides',JSON.stringify(obj));}
+function getQuotes(){try{return JSON.parse(localStorage.getItem('wt_quotes')||'[]');}catch{return[];}}
+function getCustomers(){try{return JSON.parse(localStorage.getItem('wt_customers')||'[]');}catch{return[];}}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtPrice(n){if(!n)return'-';return'$ '+Math.round(n).toLocaleString('es-AR');}
+function fmtDate(iso){try{var d=new Date(iso);return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch{return iso||'';}}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────
+function initPanel(){
+  var quotes=getQuotes();
+  var customers=getCustomers();
+  document.getElementById('qBadge').textContent=quotes.length;
+
+  var statsGrid=document.getElementById('statsGrid');
+  var totalRev=quotes.reduce(function(t,q){return t+(q.total||0);},0);
+  statsGrid.innerHTML=[
+    {label:'Cotizaciones',value:quotes.length,sub:'presupuestos generados'},
+    {label:'Clientes',value:customers.length,sub:'registrados'},
+    {label:'Total cotizado',value:totalRev>0?'$'+Math.round(totalRev).toLocaleString('es-AR'):'-',sub:'suma de presupuestos'},
+    {label:'Precios cargados',value:Object.keys(getOverrides()).length,sub:'productos con precio admin'},
+  ].map(function(s){return'<div class="stat-card"><div class="label">'+s.label+'</div><div class="value">'+s.value+'</div><div class="sub">'+s.sub+'</div></div>';}).join('');
+
+  var recent=quotes.slice(0,5);
+  var rq=document.getElementById('recentQuotes');
+  if(!recent.length){rq.innerHTML='<p style="font-size:.82rem;color:var(--dim);">No hay cotizaciones aún.</p>';return;}
+  rq.innerHTML=recent.map(function(q){
+    return'<div class="quote-card">'
+      +'<div class="quote-head">'
+      +'<div><div class="quote-id">Nro '+esc(q.id)+'</div><div class="quote-client">'+esc(q.customer.empresa||q.customer.nombre)+'</div><div class="quote-cuit">CUIT: '+esc(q.customer.cuit)+'</div></div>'
+      +'<div style="text-align:right"><div class="quote-date">'+fmtDate(q.date)+'</div>'+(q.total?'<div class="quote-total">$ '+Math.round(q.total*1.21||q.total).toLocaleString('es-AR')+'</div>':'')+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+// ── PRODUCTS (inline edit) ─────────────────────────────────────────────────
+var allProds=[];
+var filteredProds=[];
+
+function loadProducts(){
+  // We'll use a minimal product list built from the product overrides
+  // Plus we show the current override data for any key that exists
+  var ov=getOverrides();
+  // Since we don't have the full PRODUCTS array available in admin
+  // we build from override keys + let admin search and add
+  allProds=Object.keys(ov).map(function(key){
+    return{key:key,name:ov[key].name||key,price:ov[key].price,iva:ov[key].iva||21,stock:ov[key].stock||'out',qty:ov[key].qty||''};
+  });
+  // Also include any products embedded in the catalog (populated via CSV reader)
+  var csvProds=[];
+  try{csvProds=JSON.parse(localStorage.getItem('wt_admin_prods')||'[]');}catch{}
+  // Merge
+  var keys=new Set(allProds.map(function(p){return p.key;}));
+  csvProds.forEach(function(p){
+    if(!keys.has(p.key)){allProds.push(p);keys.add(p.key);}
+    else{
+      var existing=allProds.find(function(x){return x.key===p.key;});
+      if(existing&&!existing.price&&p.price)existing.price=p.price;
+    }
+  });
+}
+
+function filterProds(){
+  var q=(document.getElementById('prodSearch').value||'').toLowerCase();
+  var sf=document.getElementById('prodStockFilter').value;
+  var pf=document.getElementById('prodPriceFilter').value;
+  filteredProds=allProds.filter(function(p){
+    if(q){var h=(p.name+' '+p.key).toLowerCase();if(h.indexOf(q)===-1)return false;}
+    if(sf&&p.stock!==sf)return false;
+    if(pf==='yes'&&!p.price)return false;
+    if(pf==='no'&&p.price)return false;
+    return true;
+  });
+  var tbody=document.getElementById('prodTable');
+  document.getElementById('prodCount').textContent='Mostrando '+Math.min(filteredProds.length,200)+' de '+filteredProds.length+' productos';
+  tbody.innerHTML=filteredProds.slice(0,200).map(function(p,i){
+    var stockClass='badge-'+p.stock;
+    var stockLabel=p.stock==='in'?'En stock':p.stock==='backorder'?'Bajo pedido':'Sin stock';
+    return'<tr id="pr-'+i+'">'
+      +'<td><div style="font-weight:600;font-size:.78rem">'+esc(p.name.slice(0,60))+'</div><div style="font-size:.68rem;color:var(--dim)">'+esc(p.key)+'</div></td>'
+      +'<td><input class="edit-price" type="number" id="ep-'+i+'" value="'+(p.price||'')+'" placeholder="0.00" step="100"></td>'
+      +'<td><input class="edit-price" type="number" id="ei-'+i+'" value="'+(p.iva||21)+'" min="0" max="100" style="width:60px"></td>'
+      +'<td><select class="edit-select" id="es-'+i+'">'
+        +'<option value="in"'+(p.stock==='in'?' selected':'')+'>En stock</option>'
+        +'<option value="backorder"'+(p.stock==='backorder'?' selected':'')+'>Bajo pedido</option>'
+        +'<option value="out"'+(p.stock==='out'?' selected':'')+'>Sin stock</option>'
+        +'</select></td>'
+      +'<td><input class="edit-price" type="number" id="eq-'+i+'" value="'+(p.qty||'')+'" placeholder="—" style="width:60px" min="0"></td>'
+      +'<td><button class="save-btn" onclick="saveProd('+i+')">Guardar</button><span class="saved-indicator" id="si-'+i+'">✓ Guardado</span></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function saveProd(i){
+  var p=filteredProds[i];
+  var price=parseFloat(document.getElementById('ep-'+i).value)||null;
+  var iva=parseFloat(document.getElementById('ei-'+i).value)||21;
+  var stock=document.getElementById('es-'+i).value;
+  var qty=parseInt(document.getElementById('eq-'+i).value)||null;
+  var ov=getOverrides();
+  ov[p.key]={name:p.name,price:price,iva:iva,stock:stock,qty:qty};
+  saveOverrides(ov);
+  // Update local array
+  p.price=price;p.iva=iva;p.stock=stock;p.qty=qty;
+  var si=document.getElementById('si-'+i);
+  si.style.display='inline';
+  setTimeout(function(){si.style.display='none';},2000);
+}
+
+function renderProducts(){
+  loadProducts();
+  if(allProds.length===0){
+    document.getElementById('prodTable').innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--dim)">No hay productos cargados. Importá un CSV para comenzar.</td></tr>';
+    document.getElementById('prodCount').textContent='';
+    return;
+  }
+  filteredProds=allProds;
+  filterProds();
+}
+
+// ── QUOTES ─────────────────────────────────────────────────────────────────
+function renderQuotes(){
+  var quotes=getQuotes();
+  var el=document.getElementById('quotesList');
+  if(!quotes.length){el.innerHTML='<p style="font-size:.82rem;color:var(--dim);">No hay cotizaciones aún.</p>';return;}
+  el.innerHTML=quotes.map(function(q){
+    var items=(q.items||[]).map(function(i){return'<div class="qi"><strong>'+esc(i.name)+'</strong> ('+esc(i.key)+') — Cant: '+i.qty+(i.rp?' — '+fmtPrice(i.sp||i.rp):'')+'</div>';}).join('');
+    return'<div class="quote-card">'
+      +'<div class="quote-head">'
+      +'<div>'
+      +'<div class="quote-id">Presupuesto '+esc(q.id||'')+'</div>'
+      +'<div class="quote-client">'+esc(q.customer.empresa||q.customer.nombre)+'</div>'
+      +'<div class="quote-cuit">CUIT: '+esc(q.customer.cuit)+' | '+esc(q.customer.iva_cond)+'</div>'
+      +'<div class="quote-cuit">'+esc(q.customer.email)+(q.customer.tel?' · '+esc(q.customer.tel):'')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right">'
+      +'<div class="quote-date">'+fmtDate(q.date)+'</div>'
+      +(q.total?'<div class="quote-total">$'+Math.round(q.total*1.21||q.total).toLocaleString('es-AR')+'</div>':'')
+      +'<a href="mailto:'+esc(q.customer.email)+'?subject=Presupuesto+'+esc(q.id||'')+'&body=Estimado/a+'+esc(q.customer.nombre)+', le enviamos el presupuesto solicitado." style="font-size:.72rem;color:var(--cyan);margin-top:6px;display:inline-block;">Responder por email</a>'
+      +'</div>'
+      +'</div>'
+      +'<div class="quote-items-list">'+items+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ── CLIENTS ────────────────────────────────────────────────────────────────
+function renderClients(){
+  var customers=getCustomers();
+  var el=document.getElementById('clientsList');
+  if(!customers.length){el.innerHTML='<p style="font-size:.82rem;color:var(--dim);">No hay clientes registrados aún.</p>';return;}
+  el.innerHTML=customers.map(function(c){
+    return'<div class="client-card">'
+      +'<h3>'+esc(c.nombre)+(c.empresa&&c.empresa!==c.nombre?' — '+esc(c.empresa):'')+'</h3>'
+      +'<div class="meta">'
+      +esc(c.email)+(c.tel?' · '+esc(c.tel):'')+'<br>'
+      +(c.cargo?esc(c.cargo)+' · ':'')+esc(c.ciudad||'')+(c.prov?' · '+esc(c.prov):'')+'<br>'
+      +'Registrado: '+fmtDate(c.created||'')
+      +'</div>'
+      +'<div class="cuit-tag">CUIT: '+esc(c.cuit)+' | '+esc(c.iva_cond)+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ── CSV UPLOAD ─────────────────────────────────────────────────────────────
+var dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',function(){dz.classList.remove('drag');});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('drag');var f=e.dataTransfer.files[0];if(f)handleCSV(f);});
+
+function handleCSV(file){
+  if(!file||!file.name.endsWith('.csv')){return;}
+  var progress=document.getElementById('csvProgress');
+  var status=document.getElementById('csvStatus');
+  var bar=document.getElementById('csvBar');
+  var result=document.getElementById('csvResult');
+  progress.style.display='block';
+  status.textContent='Leyendo archivo…';bar.style.width='10%';
+  var reader=new FileReader();
+  reader.onload=function(e){
+    bar.style.width='40%';status.textContent='Procesando productos…';
+    setTimeout(function(){
+      try{
+        var text=e.target.result;
+        var lines=text.split('\n');
+        var headers=parseCSVLine(lines[0]);
+        var iSKU=headers.indexOf('SKU');
+        var iName=headers.indexOf('Name');
+        var iRP=headers.indexOf('Regular price');
+        var iSP=headers.indexOf('Sale price');
+        var iStock=headers.findIndex(function(h){return h.trim()==='In stock?';});
+        var iQty=headers.findIndex(function(h){return h.trim()==='Stock';});
+        if(iName<0){result.innerHTML='<div style="color:#ef4444;font-size:.85rem;">Error: no se encontró la columna "Name" en el CSV.</div>';progress.style.display='none';return;}
+        var prods=[];
+        var updated=0,withPrice=0;
+        var ov=getOverrides();
+        for(var i=1;i<lines.length;i++){
+          if(!lines[i].trim())continue;
+          var row=parseCSVLine(lines[i]);
+          var sku=(row[iSKU]||'').trim();
+          var name=(row[iName]||'').trim();
+          if(!name)continue;
+          var key=sku||name;
+          var rp=iRP>=0&&row[iRP]?parseFloat(row[iRP].replace(',','.'))||null:null;
+          var sp=iSP>=0&&row[iSP]?parseFloat(row[iSP].replace(',','.'))||null:null;
+          var stockRaw=iStock>=0?(row[iStock]||'').trim():'';
+          var stockStatus=stockRaw==='1'?'in':stockRaw==='backorder'?'backorder':'out';
+          var qtyRaw=iQty>=0?(row[iQty]||'').trim():'';
+          var qty=qtyRaw?parseInt(qtyRaw)||null:null;
+          prods.push({key:key,name:name,price:rp,sp:sp,stock:stockStatus,qty:qty,iva:21});
+          if(rp){
+            ov[key]={name:name,price:rp,iva:21,stock:stockStatus,qty:qty};
+            withPrice++;updated++;
+          }else if(ov[key]){
+            ov[key].stock=stockStatus;ov[key].qty=qty;ov[key].name=name;updated++;
+          }
+        }
+        saveOverrides(ov);
+        localStorage.setItem('wt_admin_prods',JSON.stringify(prods));
+        bar.style.width='100%';
+        status.textContent='Completado.';
+        result.innerHTML='<div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;padding:14px;border-radius:8px;font-size:.85rem;">'
+          +'<strong>CSV procesado correctamente</strong><br>'
+          +'Productos encontrados: <strong>'+prods.length+'</strong><br>'
+          +'Con precio cargado: <strong>'+withPrice+'</strong><br>'
+          +'Actualizados en admin: <strong>'+updated+'</strong><br><br>'
+          +'<a href="#" onclick="showTab(\'productos\');return false;" style="color:#0EA5E9;">Ver productos →</a>'
+          +'</div>';
+        allProds=prods;
+      }catch(err){
+        result.innerHTML='<div style="color:#ef4444;font-size:.85rem;">Error al procesar: '+err.message+'</div>';
+        progress.style.display='none';
+      }
+    },200);
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function parseCSVLine(line){
+  var result=[],current='',inQuotes=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){if(inQuotes&&line[i+1]==='"'){current+='"';i++;}else inQuotes=!inQuotes;}
+    else if(c===','&&!inQuotes){result.push(current);current='';}
+    else current+=c;
+  }
+  result.push(current);
+  return result;
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+(function(){
+  if(sessionStorage.getItem('wt_admin')==='1'){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('adminPanel').classList.add('on');
+    initPanel();
+  }
+})();
+</script>
+</body>
+</html>
