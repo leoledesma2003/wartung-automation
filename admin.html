@@ -226,6 +226,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   </div>
 </div>
 
+<script src="productos.js"></script>
 <script>
 // ── AUTH ──────────────────────────────────────────────────────────────────
 var ADMIN_USER='wartung';
@@ -306,26 +307,27 @@ var allProds=[];
 var filteredProds=[];
 
 function loadProducts(){
-  // We'll use a minimal product list built from the product overrides
-  // Plus we show the current override data for any key that exists
   var ov=getOverrides();
-  // Since we don't have the full PRODUCTS array available in admin
-  // we build from override keys + let admin search and add
-  allProds=Object.keys(ov).map(function(key){
-    return{key:key,name:ov[key].name||key,price:ov[key].price,iva:ov[key].iva||21,stock:ov[key].stock||'out',qty:ov[key].qty||''};
+  var base=typeof PRODUCTS!=='undefined'?PRODUCTS:[];
+  allProds=base.map(function(p){
+    var key=p.s||p.n;
+    var o=ov[key]||{};
+    return{
+      key:key,
+      name:p.n,
+      price:o.price!=null?o.price:(p.rp||null),
+      iva:o.iva||21,
+      stock:o.stock||p.stock||'out',
+      qty:o.qty!=null?o.qty:(p.qty||null),
+      img:o.img||(p.i&&p.i.length?p.i[0]:null)
+    };
   });
-  // Also include any products embedded in the catalog (populated via CSV reader)
-  var csvProds=[];
-  try{csvProds=JSON.parse(localStorage.getItem('wt_admin_prods')||'[]');}catch{}
-  // Merge
-  var keys=new Set(allProds.map(function(p){return p.key;}));
-  csvProds.forEach(function(p){
-    if(!keys.has(p.key)){allProds.push(p);keys.add(p.key);}
-    else{
-      var existing=allProds.find(function(x){return x.key===p.key;});
-      if(existing&&!existing.price&&p.price)existing.price=p.price;
-    }
-  });
+  if(!allProds.length){
+    allProds=Object.keys(ov).map(function(key){
+      var o=ov[key];
+      return{key:key,name:o.name||key,price:o.price,iva:o.iva||21,stock:o.stock||'out',qty:o.qty||null,img:o.img||null};
+    });
+  }
 }
 
 function filterProds(){
@@ -340,8 +342,8 @@ function filterProds(){
     return true;
   });
   var tbody=document.getElementById('prodTable');
-  document.getElementById('prodCount').textContent='Mostrando '+Math.min(filteredProds.length,200)+' de '+filteredProds.length+' productos';
-  tbody.innerHTML=filteredProds.slice(0,200).map(function(p,i){
+  document.getElementById('prodCount').textContent='Mostrando '+Math.min(filteredProds.length,500)+' de '+filteredProds.length+' — usá el buscador para filtrar';
+  tbody.innerHTML=filteredProds.slice(0,500).map(function(p,i){
     var stockClass='badge-'+p.stock;
     var stockLabel=p.stock==='in'?'En stock':p.stock==='backorder'?'Bajo pedido':'Sin stock';
     return'<tr id="pr-'+i+'">'
@@ -354,7 +356,7 @@ function filterProds(){
         +'<option value="out"'+(p.stock==='out'?' selected':'')+'>Sin stock</option>'
         +'</select></td>'
       +'<td><input class="edit-price" type="number" id="eq-'+i+'" value="'+(p.qty||'')+'" placeholder="—" style="width:60px" min="0"></td>'
-      +'<td><input type="url" id="eim-'+i+'" value="'+(p.img||'')+'" placeholder="https://..." style="width:200px;background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:4px;padding:5px 8px;color:var(--text);font-size:.72rem;font-family:Inter,sans-serif"></td>'
+      +'<td style="display:flex;align-items:center;gap:6px">'+(p.img?'<img src="'+p.img+'" style="width:32px;height:32px;object-fit:contain;border-radius:3px;background:#111">':'')+' <input type="url" id="eim-'+i+'" value="'+(p.img||'')+'" placeholder="https://..." style="width:180px;background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:4px;padding:5px 8px;color:var(--text);font-size:.72rem;font-family:Inter,sans-serif"></td>'
       +'<td><button class="save-btn" onclick="saveProd('+i+')">Guardar</button><span class="saved-indicator" id="si-'+i+'">✓ Guardado</span></td>'
       +'</tr>';
   }).join('');
