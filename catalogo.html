@@ -503,7 +503,7 @@ function stockBadge(p){
 }
 function renderCards(arr){
   return arr.map(function(p){
-    var img=p.i&&p.i.length?'<img src="'+esc(p.i[0])+'" alt="'+esc(p.n)+'" loading="lazy" onerror="this.style.display='none'">':'';
+    var img=p.i&&p.i.length?'<img src="'+esc(p.i[0])+'" alt="'+esc(p.n)+'" loading="lazy">':'';
     var col=CAT_COLORS[p.c]||'#F59E0B';
     var idx=filtered.indexOf(p);
     return'<div class="pc" onclick="openModal('+idx+')">'
@@ -578,7 +578,7 @@ function openModal(idx){
   var gM=document.getElementById('gMain'),gN=document.getElementById('gNoImg'),th=document.getElementById('thumbs');th.innerHTML='';
   if(p.i&&p.i.length){gM.src=p.i[0];gM.style.display='block';gN.style.display='none';
     gM.onerror=function(){this.style.display='none';gN.style.display='block';};
-    if(p.i.length>1)p.i.forEach(function(u,ii){var t=document.createElement('div');t.className='thumb'+(ii===0?' active':'');t.innerHTML='<img src="'+esc(u)+'" onerror="this.parentElement.style.display='none'">';t.onclick=function(){gM.src=u;gM.style.display='block';gN.style.display='none';document.querySelectorAll('.thumb').forEach(function(x){x.classList.remove('active');});t.classList.add('active');};th.appendChild(t);});}
+    if(p.i.length>1)p.i.forEach(function(u,ii){var t=document.createElement('div');t.className='thumb'+(ii===0?' active':'');t.innerHTML='<img src="'+esc(u)+'">';t.onclick=function(){gM.src=u;gM.style.display='block';gN.style.display='none';document.querySelectorAll('.thumb').forEach(function(x){x.classList.remove('active');});t.classList.add('active');};th.appendChild(t);});}
   else{gM.style.display='none';gN.style.display='block';}
   document.getElementById('mwa').href='https://wa.me/5491168414057?text='+encodeURIComponent('Consulto por: '+p.n+(p.s?' SKU:'+p.s:''));
   var pd=document.getElementById('mpdf');if(p.p){pd.href=p.p;pd.style.display='inline-flex';}else pd.style.display='none';
