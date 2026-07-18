@@ -176,6 +176,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
               <th>% IVA</th>
               <th>Stock</th>
               <th>Qty</th>
+              <th>URL Imagen</th>
               <th>Guardar</th>
             </tr></thead>
             <tbody id="prodTable"></tbody>
@@ -353,6 +354,7 @@ function filterProds(){
         +'<option value="out"'+(p.stock==='out'?' selected':'')+'>Sin stock</option>'
         +'</select></td>'
       +'<td><input class="edit-price" type="number" id="eq-'+i+'" value="'+(p.qty||'')+'" placeholder="—" style="width:60px" min="0"></td>'
+      +'<td><input type="url" id="eim-'+i+'" value="'+(p.img||'')+'" placeholder="https://..." style="width:200px;background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:4px;padding:5px 8px;color:var(--text);font-size:.72rem;font-family:Inter,sans-serif"></td>'
       +'<td><button class="save-btn" onclick="saveProd('+i+')">Guardar</button><span class="saved-indicator" id="si-'+i+'">✓ Guardado</span></td>'
       +'</tr>';
   }).join('');
@@ -364,11 +366,12 @@ function saveProd(i){
   var iva=parseFloat(document.getElementById('ei-'+i).value)||21;
   var stock=document.getElementById('es-'+i).value;
   var qty=parseInt(document.getElementById('eq-'+i).value)||null;
+  var img=(document.getElementById('eim-'+i).value||'').trim()||null;
   var ov=getOverrides();
-  ov[p.key]={name:p.name,price:price,iva:iva,stock:stock,qty:qty};
+  ov[p.key]={name:p.name,price:price,iva:iva,stock:stock,qty:qty,img:img};
   saveOverrides(ov);
   // Update local array
-  p.price=price;p.iva=iva;p.stock=stock;p.qty=qty;
+  p.price=price;p.iva=iva;p.stock=stock;p.qty=qty;p.img=img;
   var si=document.getElementById('si-'+i);
   si.style.display='inline';
   setTimeout(function(){si.style.display='none';},2000);
