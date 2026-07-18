@@ -608,22 +608,28 @@ function renderQModal(){
 }
 window.changeQty=function(i,d){cart[i].qty=Math.max(1,cart[i].qty+d);saveCart();updateCartBtn();renderQModal();};
 window.removeItem=function(i){cart.splice(i,1);saveCart();updateCartBtn();renderQModal();};
-// Apply admin overrides (prices, stock, images) to PRODUCTS array
-(function(){
-  try{
-    var ov=JSON.parse(localStorage.getItem('wt_product_overrides')||'{}');
-    PRODUCTS.forEach(function(p){
-      var key=p.s||p.n;
-      if(ov[key]){
-        if(ov[key].price!=null)p.rp=ov[key].price;
-        if(ov[key].stock)p.stock=ov[key].stock;
-        if(ov[key].qty!=null)p.qty=ov[key].qty;
-        if(ov[key].img){p.i=[ov[key].img];}
-      }
-    });
-  }catch(e){}
-})();
+function applyOverrides(ov){
+  PRODUCTS.forEach(function(p){
+    var key=p.s||p.n;
+    if(ov[key]){
+      if(ov[key].price!=null)p.rp=ov[key].price;
+      if(ov[key].stock)p.stock=ov[key].stock;
+      if(ov[key].qty!=null)p.qty=ov[key].qty;
+      if(ov[key].img)p.i=[ov[key].img];
+    }
+  });
+}
+// Load overrides from server, fallback to localStorage
 loadCart();updateCartBtn();initAuthBar();
+(function(){
+  var local=JSON.parse(localStorage.getItem('wt_product_overrides')||'{}');
+  applyOverrides(local);
+  fetch('api.php').then(function(r){return r.json();}).then(function(ov){
+    applyOverrides(ov);
+    localStorage.setItem('wt_product_overrides',JSON.stringify(ov));
+    applyFilters();
+  }).catch(function(){applyFilters();});
+})();
 var _p=new URLSearchParams(location.search),_c=_p.get('cat'),_q=_p.get('q');
 if(_q)document.getElementById('q').value=_q;
 if(_c){var _btn=document.querySelector('[data-c="'+_c+'"]');if(_btn){document.querySelectorAll('.catbtn').forEach(function(b){b.classList.remove('on');b.style.background='transparent';b.style.color='';});_btn.classList.add('on');_btn.style.background=CAT_COLORS[_c]||'var(--cyan)';_btn.style.color='#07080F';}}

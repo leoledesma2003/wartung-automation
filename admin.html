@@ -356,27 +356,54 @@ function filterProds(){
         +'<option value="out"'+(p.stock==='out'?' selected':'')+'>Sin stock</option>'
         +'</select></td>'
       +'<td><input class="edit-price" type="number" id="eq-'+i+'" value="'+(p.qty||'')+'" placeholder="—" style="width:60px" min="0"></td>'
-      +'<td style="display:flex;align-items:center;gap:6px">'+(p.img?'<img src="'+p.img+'" style="width:32px;height:32px;object-fit:contain;border-radius:3px;background:#111">':'')+' <input type="url" id="eim-'+i+'" value="'+(p.img||'')+'" placeholder="https://..." style="width:180px;background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:4px;padding:5px 8px;color:var(--text);font-size:.72rem;font-family:Inter,sans-serif"></td>'
+      +'<td style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><img id="eprev-'+i+'" src="'+(p.img||'')+'" style="width:36px;height:36px;object-fit:contain;border-radius:3px;background:#111;'+(p.img?'':'display:none')+'">'
+      +'<label id="sub-'+i+'" style="background:var(--blue);color:#fff;border-radius:4px;padding:5px 10px;font-size:.72rem;cursor:pointer;font-family:Inter,sans-serif">Subir imagen<input type="file" accept="image/*" style="display:none" onchange="uploadAndSave('+i+',this)"></label></td>'
       +'<td><button class="save-btn" onclick="saveProd('+i+')">Guardar</button><span class="saved-indicator" id="si-'+i+'">✓ Guardado</span></td>'
       +'</tr>';
   }).join('');
 }
 
-function saveProd(i){
+function saveProd(i, imgUrl){
   var p=filteredProds[i];
   var price=parseFloat(document.getElementById('ep-'+i).value)||null;
   var iva=parseFloat(document.getElementById('ei-'+i).value)||21;
   var stock=document.getElementById('es-'+i).value;
   var qty=parseInt(document.getElementById('eq-'+i).value)||null;
-  var img=(document.getElementById('eim-'+i).value||'').trim()||null;
-  var ov=getOverrides();
-  ov[p.key]={name:p.name,price:price,iva:iva,stock:stock,qty:qty,img:img};
-  saveOverrides(ov);
-  // Update local array
+  var img=imgUrl||p.img||null;
+  var record={name:p.name,price:price,iva:iva,stock:stock,qty:qty,img:img};
+  var patch={};patch[p.key]=record;
+  // Save to server
+  fetch('api.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)})
+    .then(function(){})
+    .catch(function(){});
+  // Also save to localStorage as fallback
+  var ov=getOverrides();ov[p.key]=record;saveOverrides(ov);
   p.price=price;p.iva=iva;p.stock=stock;p.qty=qty;p.img=img;
   var si=document.getElementById('si-'+i);
   si.style.display='inline';
   setTimeout(function(){si.style.display='none';},2000);
+}
+
+function uploadAndSave(i, input){
+  var file=input.files[0];
+  if(!file)return;
+  var btn=document.getElementById('sub-'+i);
+  btn.textContent='Subiendo...';btn.disabled=true;
+  var fd=new FormData();fd.append('img',file);
+  fetch('upload-image.php',{method:'POST',body:fd})
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(res.ok){
+        document.getElementById('eim-'+i).value=res.url;
+        var prev=document.getElementById('eprev-'+i);
+        prev.src=res.url;prev.style.display='block';
+        saveProd(i, res.url);
+      } else {
+        alert('Error: '+res.error);
+      }
+      btn.textContent='Subir imagen';btn.disabled=false;
+    })
+    .catch(function(){btn.textContent='Subir imagen';btn.disabled=false;alert('Error de conexión');});
 }
 
 function renderProducts(){
